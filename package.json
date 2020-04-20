@@ -1,0 +1,25 @@
+{
+  "name": "find-movie",
+  "version": "1.0.0",
+  "description": "A webpage used for finding movie",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@material-ui/core": "^4.9.5",
+    "dotenv": "^8.2.0",
+    "firebase": "^7.8.2",
+    "firebase-admin": "^8.9.2",
+    "isomorphic-unfetch": "^3.0.0",
+    "next": "^9.2.1",
+    "next-session": "^2.2.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  }
+}
