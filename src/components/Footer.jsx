@@ -1,12 +1,10 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
+import styles from '../styles/FooterStyle';
 
 const useStyles = makeStyles(theme => ({
-    footer: {
-        marginTop: '20px',
-        color: theme.palette.text.disabled,
-    },
+    ...styles(theme)
 }));
 
 export default function Header(props) {

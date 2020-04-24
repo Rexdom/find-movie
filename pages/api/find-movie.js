@@ -1,5 +1,3 @@
-let url = "https://api.themoviedb.org/3/movie/550?api_key="+process.env.movieApiKey
-
 import fetch from 'isomorphic-unfetch';
 
 export default async (req,res) => {

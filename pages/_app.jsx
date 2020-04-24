@@ -1,40 +1,29 @@
-import React,{useState, useEffect} from 'react';
+import React,{ useState, useEffect} from 'react';
 import App from 'next/app';
 import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import themeObj from '../src/theme';
+import themeObj from '../src/styles/theme';
 import { createMuiTheme } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(theme => ({
-    background: {
-        height: '1000px',
-        backgroundColor: 'grey',
-    },
-}));
+import Header from '../src/components/Header';
+import Footer from '../src/components/Footer';
+import Router from 'next/router';
+import UserContext from '../lib/UserContext';
 
 export default function MyApp ({ Component, pageProps }) {
-
-    const classes = useStyles();
     const [theme, setTheme] = useState(themeObj);
+    const [showName, setShowName] = useState(false);
     const sections = [
-        { title: 'Technology', url: '/Technology' },
-        { title: 'Design', url: '#' },
-        { title: 'Culture', url: '#' },
-        { title: 'Business', url: '#' },
-        { title: 'Politics', url: '#' },
-        { title: 'Opinion', url: '#' },
-        { title: 'Science', url: '#' },
-        { title: 'Health', url: '#' },
-        { title: 'Style', url: '#' },
-        { title: 'Travel', url: '#' }
+        { title: 'Discover', url:'/[name]', url_as: '/about' },
+        { title: 'Popular', url: '/' },
+        { title: 'Top Rated', url:'/[name]', url_as: '/top_rated' },
+        { title: 'New', url:'/[name]', url_as: '/new' },
+        { title: 'Recommend', url: '/' },
     ];
 
     function toggleDarkMode() {
+        console.log("Changed mode")
         let {palette:{type}} = theme;
         type = type==='light'?'dark':'light';
         setTheme({
@@ -43,12 +32,25 @@ export default function MyApp ({ Component, pageProps }) {
         });
     }
 
+    function toggleShowName() {
+        let toogle = showName==="false"?"true":"false"
+        localStorage.setItem('showMovieName', toogle);
+        setShowName(toogle);
+    }
+
     useEffect(()=> {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector('#jss-server-side');
         if (jssStyles) {
             jssStyles.parentElement.removeChild(jssStyles);
-        }
+        };
+
+        const showMovieName = localStorage.getItem('showMovieName');
+        if (showMovieName) {
+            setShowName(showMovieName);
+        } else {
+            localStorage.setItem('showMovieName', "false");
+        };
     },[])
 
     return (
@@ -61,15 +63,20 @@ export default function MyApp ({ Component, pageProps }) {
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
             <Header 
-                title="Movie" 
+                title="Find Movie" 
                 sections={sections}
+                router={Router}
+                mode={theme.palette.type}
+                toggleMode={toggleDarkMode}
+                showName={showName}
+                toggleShowName={toggleShowName}
             /> 
-            <div className={classes.background}></div>
             <Container maxWidth='lg'>
-                <button onClick={toggleDarkMode}>Click to change mode</button>
-                <Component {...pageProps} />
-                <Footer />
+                <UserContext.Provider value={{ showMovieName: showName}}>
+                    <Component {...pageProps} />
+                </UserContext.Provider>
             </Container>
+            <Footer />
         </ThemeProvider>
       </React.Fragment>
     );

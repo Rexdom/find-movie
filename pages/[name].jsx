@@ -1,21 +1,16 @@
 import React,{useState, useEffect} from 'react';
-import MainPage from '../components/MainPage';
+import MainPage from '../src/components/MainPage';
 import fetch from 'isomorphic-unfetch';
 import path from '../src/path';
 
-const WritePage = ({path_name, api_url, img_url}) => {
+const AboutPage = ({path_name, api_url, img_url}) => {
   const [movies, setMovies]=useState([]);
   const [page, setPage]=useState(1);
-  const [imgSrc, setImgSrc]=useState("");
 
-  // useEffect(() => {
-  //   if (!path_name) {
-  //     Router.replace(
-  //       `/404`
-  //     )
-  //   }
-  // }, [path_name])
-  
+  useEffect(()=>{
+    setPage(1)
+  },[path_name])
+
   function fetchMovies() {
     return new Promise((resolve, reject)=> {
       if (movies.length>0 && movies.length<10) {
@@ -37,30 +32,37 @@ const WritePage = ({path_name, api_url, img_url}) => {
     })
   }
 
-  useEffect(()=>{
-    setImgSrc(img_url.original);
-  },[])
-
   return (
     <MainPage 
       fetchMovies={fetchMovies}
       path={path_name}
-      imgSrc={imgSrc}
+      imgSrc={img_url.original}
       imgSrc_blur={img_url.blur}
     />
   )
 };
 
 export async function getStaticProps({params}) {
-  let query = 'write';
+  let query = params.name;
   let obj={
-    path_name: path[write].name,
-    api_url: path[write].url,
-    img_url: path[write].img_url,
+    path_name: path[query].name,
+    api_url: path[query].url,
+    img_url: path[query].img_url,
   };
   return {
     props: {...obj}, // will be passed to the page component as props
   }
 }
 
-export default WritePage;
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: {name: 'about'} },
+      { params: {name: 'top_rated'} },
+      { params: {name: 'new'} }
+    ],
+    fallback: false 
+  };
+}
+
+export default AboutPage;

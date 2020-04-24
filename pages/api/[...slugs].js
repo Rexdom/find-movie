@@ -1,8 +1,10 @@
 import fetch from 'isomorphic-unfetch';
+let url = "https://api.themoviedb.org/3/movie/condition?api_key="+process.env.movieApiKey
 
 export default async (req,res) => {
-    const {query: { para }} = req;
-    var content={result:new Array(20)};
-    res.json({results: content});
+    const {query: { slugs }} = req;
+    let result = await fetch(`${url.replace(/condition/, slugs[0])}&language=en-US&page=${slugs[1]}`)
+    let json = await result.json();
+    res.json({results: json.results});
     
 }
