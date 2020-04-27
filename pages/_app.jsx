@@ -1,4 +1,4 @@
-import React,{ useState, useEffect} from 'react';
+import React,{ useState, useEffect, } from 'react';
 import App from 'next/app';
 import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -14,28 +14,36 @@ import UserContext from '../lib/UserContext';
 export default function MyApp ({ Component, pageProps }) {
     const [theme, setTheme] = useState(themeObj);
     const [showName, setShowName] = useState(false);
+    const [isLogIn, setIsLogIn] = useState(true);
     const sections = [
-        { title: 'Discover', url:'/[name]', url_as: '/about' },
-        { title: 'Popular', url: '/' },
+        { title: 'Discover', url:'/[name]', url_as: '/discover' },
+        { title: 'Popular', url:'/[name]', url_as: '/popular' },
         { title: 'Top Rated', url:'/[name]', url_as: '/top_rated' },
         { title: 'New', url:'/[name]', url_as: '/new' },
-        { title: 'Recommend', url: '/' },
+        { title: 'Recommend', url:'/[name]', url_as: '/ind' },
     ];
 
+    function changeLogIn(message=null) {
+        if (!message) setIsLogIn(true);
+        else setIsLogIn(false);
+    }
+
     function toggleDarkMode() {
-        console.log("Changed mode")
-        let {palette:{type}} = theme;
-        type = type==='light'?'dark':'light';
+        let toggle = theme.palette.type==='dark'?'light':'dark';
+        localStorage.setItem('darkMode', JSON.stringify(theme.palette.type!=='dark'));
         setTheme({
             ...theme,
-            palette: {type}
+            palette: {
+                ...theme.palette,
+                type: toggle
+            }
         });
     }
 
     function toggleShowName() {
-        let toogle = showName==="false"?"true":"false"
-        localStorage.setItem('showMovieName', toogle);
-        setShowName(toogle);
+        let toggle = !showName;
+        localStorage.setItem('showMovieName', JSON.stringify(toggle));
+        setShowName(toggle);
     }
 
     useEffect(()=> {
@@ -45,12 +53,28 @@ export default function MyApp ({ Component, pageProps }) {
             jssStyles.parentElement.removeChild(jssStyles);
         };
 
-        const showMovieName = localStorage.getItem('showMovieName');
-        if (showMovieName) {
-            setShowName(showMovieName);
-        } else {
-            localStorage.setItem('showMovieName', "false");
-        };
+        // fetch('/api/auth')
+        //     .then(res=>{
+        //         if (res.status===200) setIsLogIn(true)
+        //         else {
+        //             setIsLogIn(false);
+        //         }
+        //     }).catch(()=>setIsLogIn(false))
+
+        const stored_showMovieName = JSON.parse(localStorage.getItem('showMovieName'));
+        const stored_isDarkMode = JSON.parse(localStorage.getItem('darkMode'));
+        if (stored_isDarkMode!==null) {
+            setTheme({
+                ...theme,
+                palette:{
+                    ...theme.palette,
+                    type: stored_isDarkMode?'dark':'light',
+                }
+            })
+        }else localStorage.setItem('darkMode', JSON.stringify(true));
+
+        if (stored_showMovieName!==null) setShowName(stored_showMovieName);
+        else localStorage.setItem('showMovieName', JSON.stringify(showName));
     },[])
 
     return (
@@ -66,13 +90,15 @@ export default function MyApp ({ Component, pageProps }) {
                 title="Find Movie" 
                 sections={sections}
                 router={Router}
-                mode={theme.palette.type}
+                mode={theme.palette.type==='dark'}
                 toggleMode={toggleDarkMode}
+                isLogIn={isLogIn}
+                changeLogIn={changeLogIn}
                 showName={showName}
                 toggleShowName={toggleShowName}
             /> 
             <Container maxWidth='lg'>
-                <UserContext.Provider value={{ showMovieName: showName}}>
+                <UserContext.Provider value={ {showName, isLogIn} }>
                     <Component {...pageProps} />
                 </UserContext.Provider>
             </Container>

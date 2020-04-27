@@ -1,4 +1,4 @@
-const mainPageStyle = function(theme, fade) {
+const MainPageStyle = function(theme, fade) {
     return {
         backgroundRoot:{
             display: 'flex',
@@ -45,13 +45,13 @@ const mainPageStyle = function(theme, fade) {
             }
         },
         withImg: {
-            marginTop: 'calc(100vw * 0.5625)',
+            marginTop: 'calc(100vw * 0.5625 - 70px)',
             [theme.breakpoints.down('xs')]: {
                 marginTop:'calc(75vh)'
             },
         },
         withoutImg: {
-            marginTop: '128px',
+            marginTop: '150px',
         },
         root: {
             display: 'flex',
@@ -60,28 +60,28 @@ const mainPageStyle = function(theme, fade) {
             '& > *': {
                 [theme.breakpoints.up('xs')]: {
                 margin: theme.spacing(1),
-                width: theme.spacing(13),
-                height: theme.spacing(19.5),
+                width: theme.spacing(16),
+                height: theme.spacing(31),
                 },
                 [theme.breakpoints.up('sm')]: {
                 margin: theme.spacing(2),
                 width: theme.spacing(19),
-                height: theme.spacing(28.5),
+                height: theme.spacing(35.5),
                 },
                 [theme.breakpoints.up('md')]: {
                 margin: theme.spacing(3),
                 width: theme.spacing(26),
-                height: theme.spacing(39),
+                height: theme.spacing(46),
                 },
                 [theme.breakpoints.up('lg')]: {
                 margin: theme.spacing(4),
                 width: theme.spacing(30),
-                height: theme.spacing(45),
+                height: theme.spacing(52),
                 },
             }
         }
     }
 };
 
-export default mainPageStyle;
+export default MainPageStyle;
   

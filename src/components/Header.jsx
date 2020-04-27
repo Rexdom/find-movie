@@ -8,9 +8,14 @@ import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import BookmarksIcon from '@material-ui/icons/Bookmarks';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import LogInDialog from './LogInDialog';
 import styles from '../styles/HeaderStyle';
 import {makeStyles, fade} from '@material-ui/core/styles';
 import useScrollTrigger from '@material-ui/core/useScrollTrigger';
@@ -21,8 +26,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header(props) {
     const classes = useStyles();
-    const { sections, title, router, mode, toggleMode, showName, toggleShowName} = props;
+    const { sections, title, router, mode, toggleMode, showName, toggleShowName, isLogIn , changeLogIn } = props;
     const [input, setInput] = useState('');
+    const [openLogIn, setOpenLogIn] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const trigger = useScrollTrigger({
@@ -50,6 +56,18 @@ export default function Header(props) {
 
     function closeMenu() {
         setAnchorEl(null)
+    }
+
+    function displayLogInForm() {
+        setOpenLogIn(true)
+    }
+
+    function closeLogInForm() {
+        setOpenLogIn(false)
+    }
+
+    function logout(){
+        changeLogIn('You have been log out');
     }
 
   return (
@@ -83,10 +101,10 @@ export default function Header(props) {
                         onChange={handleChange}
                     />
                 </form>
-                <div>
-                    <Button onClick={openMenu} className={classes.MenuIcon}>
+                <div className={classes.IconList}>
+                    <IconButton onClick={openMenu} className={classes.IconButton}>
                         <SettingsIcon />
-                    </Button>
+                    </IconButton>
                     <Menu
                         anchorEl={anchorEl}
                         keepMounted
@@ -96,7 +114,7 @@ export default function Header(props) {
                         <MenuItem className={classes.MenuItem}>
                             <FormControlLabel
                                 control={<Switch
-                                    checked={mode==="dark"}
+                                    checked={mode}
                                     name="DarkMode"
                                     color="primary"
                                 />}
@@ -107,7 +125,7 @@ export default function Header(props) {
                         <MenuItem className={classes.MenuItem}>
                             <FormControlLabel
                                 control={<Switch
-                                    checked={showName==="true"}
+                                    checked={showName}
                                     name="ShowName"
                                     color="primary"
                                 />}
@@ -116,6 +134,19 @@ export default function Header(props) {
                             />
                         </MenuItem>
                     </Menu>
+                    {isLogIn===false && 
+                    <IconButton onClick={displayLogInForm} className={classes.IconButton}>
+                        <AssignmentIndIcon />
+                    </IconButton>}
+                    {isLogIn && 
+                    <>
+                        <IconButton className={classes.IconButton}>
+                            <BookmarksIcon />
+                        </IconButton>
+                        <IconButton onClick={changeLogIn} className={classes.IconButton}>
+                            <ExitToAppIcon />
+                        </IconButton>
+                    </>}    
                 </div>
             </Toolbar>
             <Toolbar component="nav" className={classes.toolbarSecondary}>
@@ -136,6 +167,7 @@ export default function Header(props) {
                 ))}
             </Toolbar>
         </AppBar> 
+        <LogInDialog open={openLogIn} onClose={closeLogInForm} changeLogIn={logout}/>
     </React.Fragment>
   );
 }

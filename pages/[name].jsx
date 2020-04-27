@@ -1,9 +1,9 @@
-import React,{useState, useEffect} from 'react';
+import React,{useState, useEffect,} from 'react';
 import MainPage from '../src/components/MainPage';
 import fetch from 'isomorphic-unfetch';
 import path from '../src/path';
 
-const AboutPage = ({path_name, api_url, img_url}) => {
+const AboutPage = ({path_name, api_url, img_url_original, img_url_blur}) => {
   const [movies, setMovies]=useState([]);
   const [page, setPage]=useState(1);
 
@@ -36,28 +36,29 @@ const AboutPage = ({path_name, api_url, img_url}) => {
     <MainPage 
       fetchMovies={fetchMovies}
       path={path_name}
-      imgSrc={img_url.original}
-      imgSrc_blur={img_url.blur}
+      imgSrc={img_url_original}
+      imgSrc_blur={img_url_blur}
     />
   )
 };
 
 export async function getStaticProps({params}) {
   let query = params.name;
-  let obj={
-    path_name: path[query].name,
-    api_url: path[query].url,
-    img_url: path[query].img_url,
-  };
+  let path_name= path[query].name;
+  let api_url= path[query].url;
+  let img_url_original= path[query].img_url.original;
+  let img_url_blur=path[query].img_url.blur
   return {
-    props: {...obj}, // will be passed to the page component as props
+    props: {path_name, api_url, img_url_original, img_url_blur}, // will be passed to the page component as props
   }
 }
 
 export async function getStaticPaths() {
   return {
     paths: [
-      { params: {name: 'about'} },
+      { params: {name: 'ind'} },
+      { params: {name: 'popular'} },
+      { params: {name: 'discover'} },
       { params: {name: 'top_rated'} },
       { params: {name: 'new'} }
     ],

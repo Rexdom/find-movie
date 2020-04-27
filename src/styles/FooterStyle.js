@@ -1,4 +1,4 @@
-const footerStyle = function(theme){
+const FooterStyle = function(theme){
     return {
         footer: {
             marginTop: '20px',
@@ -7,4 +7,4 @@ const footerStyle = function(theme){
     }
 }
 
-export default footerStyle
+export default FooterStyle

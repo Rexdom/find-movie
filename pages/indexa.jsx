@@ -1,7 +1,7 @@
 import React,{useState, useEffect, useRef} from 'react';
 import MovieCard from '../src/components/MovieCard';
 import Loading from '../src/components/Loading';
-import DetailDialog from '../src/components/DetailDialog';
+import Dialog from '../src/components/Dialog';
 import { makeStyles } from '@material-ui/core/styles';
 import fetch from 'isomorphic-unfetch';
 
@@ -166,7 +166,7 @@ const IndexPage = () => {
       </div>
       <Loading loading={status}/>
       {status!="End" && <div id='page-bottom-boundary' style={{ height:'60px',border: '10px solid red' }} ref={lazyNode}>Check Loading Area</div>}
-      {details && <DetailDialog open={isOpen} data={details} onClose={handleClose}/>}
+      {details && <Dialog open={isOpen} data={details} onClose={handleClose}/>}
     </main>
   );
 };

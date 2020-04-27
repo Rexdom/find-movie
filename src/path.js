@@ -1,10 +1,26 @@
 const path = {
-    about:{
+    ind:{
         name: 'popular',
         url: '/api/popular/',
         img_url:{
             original:"/popular.jpg",
             blur:"/popular_blur.jpg"
+        }
+    },
+    popular:{
+        name: 'popular',
+        url: '/api/popular/',
+        img_url:{
+            original:"/popular.jpg",
+            blur:"/popular_blur.jpg"
+        }
+    },
+    discover:{
+        name: 'discover',
+        url: '/api/popular/',
+        img_url:{
+            original:"/discover.jpg",
+            blur:"/discover_blur.jpg"
         }
     },
     top_rated:{
@@ -23,7 +39,7 @@ const path = {
             blur:"/new_blur.jpg"
         }
     },
-};
+}
 
 export default path;
   

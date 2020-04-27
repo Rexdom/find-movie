@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import styles from '../styles/DetailDialogStyle';
+import styles from '../styles/DialogStyle';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -19,9 +19,9 @@ const useStyles = makeStyles((theme) => ({
     ...styles(theme),
 }));
 
-export default function AlertDialogSlide(props) {
+export default function DetailDialog(props) {
 
-  const {data, open}=props;
+  const {data, open, comments}=props;
   const classes = useStyles();
 
   const handleClose = () => {
@@ -31,7 +31,7 @@ export default function AlertDialogSlide(props) {
   return (
     <div>
       <Dialog
-        open={open}
+        open={open!=="close"}
         TransitionComponent={Transition}
         onClose={handleClose}
         fullWidth={true}
@@ -40,16 +40,22 @@ export default function AlertDialogSlide(props) {
         style={{margin: '0 3%'}}
       >
         <DialogTitle>
-            {data.name} - {data.year}
+            {data.name} - {data.date}
             <IconButton className={classes.closeButton} onClick={handleClose}>
                 <CloseIcon />
             </IconButton>
         </DialogTitle>
         <DialogContent dividers>
-          {data.backdrop && <img src={`https://image.tmdb.org/t/p/w780${data.backdrop}`} className={classes.backdrop}/>}
+          {open==='details' && 
+          <>
+            <DialogContentText>           
+              Details....
+            </DialogContentText>  
+          </>}
+          {open==='comments' &&
           <DialogContentText>           
-            Introduction: {data.overview}
-          </DialogContentText>
+            Comments...
+          </DialogContentText>}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

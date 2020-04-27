@@ -1,4 +1,4 @@
-const DetailDialogStyle = function(theme){
+const DialogStyle = function(theme){
     return {
         backdrop:{
             maxWidth:'780px', 
@@ -13,4 +13,4 @@ const DetailDialogStyle = function(theme){
     }
 }
 
-export default DetailDialogStyle
+export default DialogStyle

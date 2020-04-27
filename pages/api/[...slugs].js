@@ -5,6 +5,6 @@ export default async (req,res) => {
     const {query: { slugs }} = req;
     let result = await fetch(`${url.replace(/condition/, slugs[0])}&language=en-US&page=${slugs[1]}`)
     let json = await result.json();
+    res.setHeader('Cache-Control',"max-age=3600")
     res.json({results: json.results});
-    
 }

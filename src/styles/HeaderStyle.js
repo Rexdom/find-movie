@@ -1,4 +1,4 @@
-const headerStyle = function(theme, fade){
+const HeaderStyle = function(theme, fade){
   return {
     appBar: {
         transition: "all 500ms ease",
@@ -30,7 +30,7 @@ const headerStyle = function(theme, fade){
           backgroundColor: fade(theme.palette.background.default, 0.8),
         },
         marginLeft: 0,
-        marginRight: theme.spacing(1),
+        marginRight: theme.spacing(0.5),
         transition: theme.transitions.create('width'),
         '&:focus-within': {
             [theme.breakpoints.up('sm')]: {
@@ -67,7 +67,10 @@ const headerStyle = function(theme, fade){
         paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
         width: '100%',
     },
-    MenuIcon: {
+    IconList: {
+        display: 'flex',
+    },
+    IconButton: {
         height: '100%',
         display: 'flex',
         alignItems: 'center',
@@ -92,5 +95,5 @@ const headerStyle = function(theme, fade){
   }
 };
 
-export default headerStyle;
+export default HeaderStyle;
   
