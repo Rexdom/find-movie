@@ -13,7 +13,7 @@ const IndexPage = () => {
         resolve(movies);
         setMovies([]);
       } else {
-        fetch('/api/popular'+page)
+        fetch('/api/popular/'+page)
         .then(res=>res.json())
         .then(data=>{
           setPage(page+1);
