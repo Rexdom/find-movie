@@ -4,3 +4,5 @@ node_modules
 package-lock.json
 serviceAccountKey.json
 .now
+_error.js
+404.js
