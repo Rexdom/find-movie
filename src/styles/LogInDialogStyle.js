@@ -1,5 +1,8 @@
 const LogInDialogStyle = function(theme){
     return {
+        warning: {
+            margin: '0 30px 10px'
+        },
         root: {
             margin: '0 30px 15px 30px',
             display: 'flex',

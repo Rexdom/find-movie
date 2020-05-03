@@ -3,11 +3,13 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Link from 'next/link';
+import Hidden from '@material-ui/core/Hidden';
 import AppBar from '@material-ui/core/AppBar';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -29,7 +31,8 @@ export default function Header(props) {
     const { sections, title, router, mode, toggleMode, showName, toggleShowName, isLogIn , changeLogIn } = props;
     const [input, setInput] = useState('');
     const [openLogIn, setOpenLogIn] = useState(false);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [anchorEl2, setAnchorEl2] = useState(null);
 
     const trigger = useScrollTrigger({
         disableHysteresis: true,
@@ -54,8 +57,16 @@ export default function Header(props) {
         setAnchorEl(e.currentTarget)
     }
 
+    function openMenu2(e) {
+        setAnchorEl2(e.currentTarget)
+    }
+
     function closeMenu() {
         setAnchorEl(null)
+    }
+
+    function closeMenu2() {
+        setAnchorEl2(null)
     }
 
     function displayLogInForm() {
@@ -67,7 +78,7 @@ export default function Header(props) {
     }
 
     function logout(){
-        changeLogIn('You have been log out');
+        changeLogIn(null, 'Log out success');
     }
 
   return (
@@ -87,20 +98,45 @@ export default function Header(props) {
                 >
                 {title}
                 </Typography>
-                <form onSubmit={submit} className={classes.search}>
-                    <div className={classes.searchIcon}>
-                        <SearchIcon />
-                    </div>
-                    <InputBase
-                        placeholder="Search…"
-                        className={classes.inputBase}
-                        classes={{
-                            input: classes.inputInput,
-                        }}
-                        value={input}
-                        onChange={handleChange}
-                    />
-                </form>
+                <Hidden xsDown>
+                    <form onSubmit={submit} className={classes.search}>
+                        <div className={classes.searchIcon}>
+                            <SearchIcon />
+                        </div>
+                        <InputBase
+                            placeholder="Search…"
+                            className={classes.inputBase}
+                            classes={{
+                                input: classes.inputInput,
+                            }}
+                            value={input}
+                            onChange={handleChange}
+                        />
+                    </form>
+                </Hidden>
+                <Hidden smUp>
+                    <IconButton onClick={openMenu2} className={classes.IconButton}>
+                        <MenuIcon />
+                    </IconButton>
+                    <Menu
+                        anchorEl={anchorEl2}
+                        keepMounted
+                        open={Boolean(anchorEl2)}
+                        onClose={closeMenu2}
+                    >
+                        {sections.map(section => (
+                        <MenuItem key={section.title}>
+                            <Link
+                                href={section.url}
+                                as={section.url_as?section.url_as:undefined}
+                                scroll
+                            >
+                                <Typography color="inherit">{section.title}</Typography>
+                            </Link>
+                        </MenuItem>
+                        ))}
+                    </Menu>
+                </Hidden>
                 <div className={classes.IconList}>
                     <IconButton onClick={openMenu} className={classes.IconButton}>
                         <SettingsIcon />
@@ -140,34 +176,58 @@ export default function Header(props) {
                     </IconButton>}
                     {isLogIn && 
                     <>
-                        <IconButton className={classes.IconButton}>
-                            <BookmarksIcon />
-                        </IconButton>
-                        <IconButton onClick={changeLogIn} className={classes.IconButton}>
+                        <Link
+                            href='/watchlist'
+                            passHref
+                            scroll
+                        >
+                            <IconButton className={classes.IconButton}>
+                                <BookmarksIcon />
+                            </IconButton>
+                        </Link>    
+                        <IconButton onClick={logout} className={classes.IconButton}>
                             <ExitToAppIcon />
                         </IconButton>
                     </>}    
                 </div>
             </Toolbar>
             <Toolbar component="nav" className={classes.toolbarSecondary}>
-                {sections.map(section => (
-                <Link
-                    key={section.title}
-                    href={section.url}
-                    as={section.url_as?section.url_as:undefined}
-                    passHref
-                    scroll
-                >
-                    <Button 
-                        component="a"
-                        color="inherit"
-                        className={classes.toolbarLink}
-                    >{section.title}</Button>
-                </Link>
-                ))}
+                <Hidden smUp>
+                    <form onSubmit={submit} className={classes.search}>
+                        <div className={classes.searchIcon}>
+                            <SearchIcon />
+                        </div>
+                        <InputBase
+                            placeholder="Search…"
+                            className={classes.inputBase}
+                            classes={{
+                                input: classes.inputInput,
+                            }}
+                            value={input}
+                            onChange={handleChange}
+                        />
+                    </form>
+                </Hidden>
+                <Hidden xsDown>
+                    {sections.map(section => (
+                    <Link
+                        key={section.title}
+                        href={section.url}
+                        as={section.url_as?section.url_as:undefined}
+                        passHref
+                        scroll
+                    >
+                        <Button 
+                            component="a"
+                            color="inherit"
+                            className={classes.toolbarLink}
+                        >{section.title}</Button>
+                    </Link>
+                    ))}
+                </Hidden>
             </Toolbar>
         </AppBar> 
-        <LogInDialog open={openLogIn} onClose={closeLogInForm} changeLogIn={logout}/>
+        <LogInDialog open={openLogIn} onClose={closeLogInForm} changeLogIn={changeLogIn}/>
     </React.Fragment>
   );
 }

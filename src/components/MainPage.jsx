@@ -17,6 +17,7 @@ export default function MainPage(props) {
       path,
       fetchMovies,
     } = props;
+    const [prevPath, setPrevPath]=useState(null);
     const [isOpen, setIsOpen]=useState("close");
     const [details, setDetails]=useState(null);
     const [shownMovies, setShownMovies]=useState([]);
@@ -52,6 +53,7 @@ export default function MainPage(props) {
       fetch('/api/update',{
         method:'post',
         headers: {
+            'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json'
         },
@@ -68,6 +70,7 @@ export default function MainPage(props) {
       fetch('/api/update',{
         method:'post',
         headers: {
+            'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
             'Accept': 'application/json, text/plain, */*',
             'Content-Type': 'application/json'
         },
@@ -80,14 +83,13 @@ export default function MainPage(props) {
       })
     }
 
-    function expandDetails(obj, comments=null) {
-      if (comments) {
-        setDetails({...obj, comments});
-        setIsOpen("comments");
-      } else {
-        setDetails(obj);
-        setIsOpen("details");
-      }
+    function expandDetails(obj, type) {
+      setDetails(obj);
+      setIsOpen(type);
+    }
+
+    function switchType() {
+      setIsOpen(isOpen==='details'?'comments':'details')
     }
     
     function handleClose() {
@@ -104,22 +106,37 @@ export default function MainPage(props) {
     },[imgSrc])
 
     useEffect(() => {
-      if (isLogIn){
-        let isMount = true;
-        setShownMovies([]);
-        setStatus("Not loading");
-        fetch('/api/getlist')
-          .then((res)=>res.json())
+      let isMount = true;
+      if (isLogIn && path===prevPath){
+        fetch('/api/getlist',{
+          method: 'get',
+          headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
+        }).then((res)=>res.json())
           .then((data)=>{
             console.log(data)
             if (isMount) setRecord(data)
         })
-        return ()=>{
-          isMount = false;
-        }
+      }else if (isLogIn && path!==prevPath){
+        setPrevPath(path);
+        setShownMovies([]);
+        setStatus("Not loading");
+        fetch('/api/getlist',{
+          method: 'get',
+          headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
+        }).then((res)=>res.json())
+          .then((data)=>{
+            console.log(data)
+            if (isMount) setRecord(data)
+        })
+      }else if (path!==prevPath){
+        setPrevPath(path);
+        setShownMovies([]);
       }else setRecord(null)
-    },[path, isLogIn])
 
+      return ()=>{
+        isMount = false;
+      }
+    },[isLogIn, path])
 
     useEffect(() => {
         let isMount = true;
@@ -162,8 +179,9 @@ export default function MainPage(props) {
           name={movie.title} 
           date={movie.release_date}
           poster={movie.poster_path}
-          inWatchlist={record ? record.watch.indexOf(movie.id) : null}
-          isLiked={record ? record.like.indexOf(movie.id) : null}
+          description={movie.overview}
+          inWatchlist={record ? record.watch.includes(movie.id) : null}
+          isLiked={record ? record.like.includes(movie.id) : null}
           toggleWatchlist={toggleWatchlist}
           toggleLike={toggleLike}
           onClick={expandDetails}
@@ -178,9 +196,10 @@ export default function MainPage(props) {
             <>
               <div className={classes.backgroundRoot}>
                 <img src={imgSrc_blur} className={classes.background} {...loaded && {style: { opacity: "0" }}}/>
-              </div>  
-              <div className={classes.backgroundRoot}>
                 <img src={img} className={`${classes.background} ${loaded && classes.progressive}`} onLoad={finishLoad} {...!loaded && {style: { opacity: "0" }}}/>
+              </div>
+              <div className={classes.title}>
+                <h1 className={classes.h1}>{path.replace('_',' ')}</h1>
               </div>
             </>   
           }
@@ -189,7 +208,7 @@ export default function MainPage(props) {
           </div>
           <Loading loading={status}/>
           {status!="End" && <div key={path} id='page-bottom-boundary' className={classes.checkLoading} ref={lazyNode}></div>}
-          {details && <Dialog open={isOpen} data={details} onClose={handleClose}/>}
+          {details && <Dialog open={isOpen} data={details} toggleWatchlist={toggleWatchlist} toggleLike={toggleLike} switchType={switchType} onClose={handleClose}/>}
         </main>
     );
 }

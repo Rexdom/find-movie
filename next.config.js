@@ -11,5 +11,6 @@ module.exports = {
     measurementId: process.env.measurementId,
     movieApiKey: process.env.movieApiKey,
     databaseURL: process.env.databaseURL,
+    sercet: process.env.sercet,
   },
 };

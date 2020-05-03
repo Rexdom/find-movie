@@ -56,11 +56,9 @@ export async function getStaticProps({params}) {
 export async function getStaticPaths() {
   return {
     paths: [
-      { params: {name: 'ind'} },
       { params: {name: 'popular'} },
-      { params: {name: 'discover'} },
       { params: {name: 'top_rated'} },
-      { params: {name: 'new'} }
+      { params: {name: 'new'} },
     ],
     fallback: false 
   };

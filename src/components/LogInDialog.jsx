@@ -53,18 +53,13 @@ export default function AlertDialogSlide(props) {
         if (!email.length) error.email = 'Email cannot be empty'
         else if (!email.match(/^[\S]+@[\S]{2,}\.[\S]{2,}$/)) error.email = 'Invalid email format'
         if (!password) error.password = 'Password cannot be empty'
-        else if (password.length<5) error.password = "Invalid password"
+        else if (password.length<6) error.password = "Invalid password"
         if (type === 'Sign Up') {
             if (repassword!==password) error.repassword = "The re-enter password is different"
         }
         setErr(error);
         if (Object.keys(error).length) setLoading(false)
         else {
-            setTimeout(()=>{
-                onClose();
-                setLoading(false)
-            },5000)
-            
             fetch(`/api/${type==="Log In"?'login':'signup'}`,{
                 method:'post',
                 headers: {
@@ -74,17 +69,25 @@ export default function AlertDialogSlide(props) {
                     email,
                     password,
                 })
-            }).then(res=>res.json()).then(json=>{
+            }).then(res=>{
+                return res.json();
+            }).then(json=>{
                 if (json.status==='ok'){
-                    document.cookie.set
-                    changeLogIn();
+                    changeLogIn(json.token);
                     onClose();
                 }
                 else {
-
+                    setErr({server: json.err})
+                    setPassword('');
+                    setRepassword('');
                 }
                 setLoading(false);
+            }).catch(err=>{
+                console.log(err)
+                setErr({server: err.toString()});
+                setLoading(false);
             })
+            
         }
     }
 
@@ -92,6 +95,9 @@ export default function AlertDialogSlide(props) {
         if (!loading){
             onClose();
             setType('Log In');
+            setPassword('');
+            setRepassword('');
+            setErr({});
         }
     };
   
@@ -101,12 +107,14 @@ export default function AlertDialogSlide(props) {
           open={open}
           onClose={handleClose}
           fullWidth={true}
+          scroll='body'
         >
             <DialogTitle>
                 {type}
             </DialogTitle>
+            {err.server && <Typography className={classes.warning} color='error'>{err.server}</Typography>}
             {type==='Log In' && 
-                <form className={classes.root} autoComplete={false}>
+                <form className={classes.root}>
                     <TextField
                         id="email-input"
                         label="Email"
@@ -141,7 +149,7 @@ export default function AlertDialogSlide(props) {
                     </Typography>
                 </form>}
             {type==="Sign Up" && 
-                <form className={classes.root} autoComplete={false}>
+                <form className={classes.root}>
                     <TextField
                         id="new-email-input"
                         label="Email"
@@ -156,7 +164,7 @@ export default function AlertDialogSlide(props) {
                         id="new-standard-password-input"
                         label="Password"
                         type="password"
-                        helperText={err.email||"Length should have at least 5 characters"}
+                        helperText={err.password||"Length should have at least 6 characters"}
                         className={classes.inputPass}
                         value={password}
                         onChange={changePassword}
@@ -166,11 +174,11 @@ export default function AlertDialogSlide(props) {
                         id="re-enter-password-input"
                         label="Re-enter your password"
                         type="password"
-                        helperText={err.email||null}
+                        helperText={err.repassword||null}
                         className={classes.input}
                         value={repassword}
                         onChange={changeRepassword}
-                        err={err.repassword ? true : false}
+                        error={err.repassword ? true : false}
                     />
                     {loading?
                     <CircularProgress className={classes.loading}/>:

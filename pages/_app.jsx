@@ -14,18 +14,26 @@ import UserContext from '../lib/UserContext';
 export default function MyApp ({ Component, pageProps }) {
     const [theme, setTheme] = useState(themeObj);
     const [showName, setShowName] = useState(false);
-    const [isLogIn, setIsLogIn] = useState(true);
+    const [isLogIn, setIsLogIn] = useState(null);
     const sections = [
-        { title: 'Discover', url:'/[name]', url_as: '/discover' },
+        { title: 'Home', url:'/'},
         { title: 'Popular', url:'/[name]', url_as: '/popular' },
         { title: 'Top Rated', url:'/[name]', url_as: '/top_rated' },
-        { title: 'New', url:'/[name]', url_as: '/new' },
-        { title: 'Recommend', url:'/[name]', url_as: '/ind' },
+        { title: 'New', url:'/[name]', url_as: '/new' }
     ];
 
-    function changeLogIn(message=null) {
-        if (!message) setIsLogIn(true);
-        else setIsLogIn(false);
+    function changeLogIn(token=null, message=null) {
+        if (token) {
+            let date = new Date()
+            localStorage.setItem('login',JSON.stringify({
+                token: token, 
+                expire: date.setDate(date.getDate() + 1),
+            }))
+            setIsLogIn(true);
+        } else {
+            localStorage.removeItem('login');
+            setIsLogIn(false);
+        }
     }
 
     function toggleDarkMode() {
@@ -53,13 +61,23 @@ export default function MyApp ({ Component, pageProps }) {
             jssStyles.parentElement.removeChild(jssStyles);
         };
 
-        // fetch('/api/auth')
-        //     .then(res=>{
-        //         if (res.status===200) setIsLogIn(true)
-        //         else {
-        //             setIsLogIn(false);
-        //         }
-        //     }).catch(()=>setIsLogIn(false))
+        const login = JSON.parse(localStorage.getItem('login'));
+        if (!login) setIsLogIn(false);
+        else if (Date()>login.expire) {
+            localStorage.removeItem('login');
+            setIsLogIn(false);
+        }
+        else {
+            fetch('/api/auth',{
+                method: 'get',
+                headers: new Headers({ Authorization: `Bearer ${login.token}` })
+            }).then(res=>{
+                if (res.status===200) setIsLogIn(true)
+                else {
+                    setIsLogIn(false);
+                }
+            }).catch(()=>setIsLogIn(false))
+        }
 
         const stored_showMovieName = JSON.parse(localStorage.getItem('showMovieName'));
         const stored_isDarkMode = JSON.parse(localStorage.getItem('darkMode'));
@@ -98,7 +116,7 @@ export default function MyApp ({ Component, pageProps }) {
                 toggleShowName={toggleShowName}
             /> 
             <Container maxWidth='lg'>
-                <UserContext.Provider value={ {showName, isLogIn} }>
+                <UserContext.Provider value={ {showName, isLogIn } }>
                     <Component {...pageProps} />
                 </UserContext.Provider>
             </Container>

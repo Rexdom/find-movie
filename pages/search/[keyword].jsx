@@ -33,7 +33,7 @@ const SearchPage = ({query, api_url, reject}) => {
 
   return (
     <>
-      {!!reject
+      {reject
         ?
         <p>Invalid search request</p>
         :

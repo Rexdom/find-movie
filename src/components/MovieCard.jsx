@@ -20,44 +20,33 @@ const useStyles = makeStyles(theme => ({
 
 export default function MovieCard(props) {
     const classes= useStyles();
-    const { id, name, date, poster, inWatchlist ,isLiked ,toggleWatchlist, toggleLike} = props;
-    const [detail,setDetail] = useState({ id, name, date, poster });
-    const [urls,setUrls]=useState({large:'',medium:'',small:''});
+    const { id, name, date, poster, description, inWatchlist ,isLiked ,toggleWatchlist, toggleLike } = props;
+    const [watchlist, setWatchlist] = useState(inWatchlist);
+    const [like, setLike] = useState(isLiked);
+    const [urls, setUrls]=useState({large:'',medium:'',small:''});
     const {showName} = useContext(UserContext);
 
     function watchDetail() {
-        props.onClick(detail);
+        props.onClick({ id, name, date, poster, description }, 'details');
     };
 
     function openComments() {
-        props.onClick(detail, ['comments']);
-        setDetail({...detail,comments:['comments']})
+        props.onClick({ id, name, date, poster, description }, 'comments');
     }
 
     function changeWatchlist() {
-        toggleWatchlist(id, {name, date, poster}, !detail.watchlist)
-        setDetail({...detail, watchlist:!detail.watchlist});
+        toggleWatchlist(id, {id, title:name, release_date:date, poster_path:poster}, !watchlist)
+        setWatchlist(!watchlist);
     }
 
     function changeLike() {
-        toggleLike(id, {name, date, poster}, !detail.like)
-        setDetail({...detail, like:!detail.like});
-    }
-
-    function showComments() {
-        fetch(`api/comments/${id}`)
-         .then(async (res)=>{
-            let content = await res.json();
-            setResult(content.results.url?content.results.url:'Not found');
-         })
+        toggleLike(id, {id, title:name, release_date:date, poster_path:poster}, !like)
+        setLike(!like);
     }
 
     useEffect(()=>{
-        setDetail({
-            ...detail, 
-            watchlist: inWatchlist!==null ? inWatchlist!==-1 : null, 
-            like: isLiked!==null ? isLiked!==-1 : null
-        })
+        setWatchlist(inWatchlist);
+        setLike(isLiked);
     },[inWatchlist])
 
     useEffect((()=>{
@@ -66,7 +55,7 @@ export default function MovieCard(props) {
             medium:`https://image.tmdb.org/t/p/w185${poster}`,
             small: `https://image.tmdb.org/t/p/w154${poster}`
         })
-    }),[])
+    }),[poster])
 
     return (
         useMemo(()=>(
@@ -93,11 +82,11 @@ export default function MovieCard(props) {
                     </Typography>
                 </CardActionArea>
                 <CardActions disableSpacing className={classes.actions}>
-                    {detail.watchlist!==null && <IconButton onClick={changeWatchlist} aria-label='Add to Watchlist'>
-                        {detail.watchlist ? <BookmarkIcon fontSize="small"/> : <BookmarkBorderIcon fontSize="small"/>}
+                    {watchlist!==null && <IconButton onClick={changeWatchlist} aria-label='Add to Watchlist'>
+                        {watchlist ? <BookmarkIcon fontSize="small"/> : <BookmarkBorderIcon fontSize="small"/>}
                     </IconButton>}
-                    {detail.like!==null && <IconButton onClick={changeLike} aria-label='Like'>
-                        {detail.like ? <ThumbUpAltIcon fontSize="small" color="secondary"/> : <ThumbUpAltOutlinedIcon fontSize="small"/>}
+                    {like!==null && <IconButton onClick={changeLike} aria-label='Like'>
+                        {like ? <ThumbUpAltIcon fontSize="small" color="secondary"/> : <ThumbUpAltOutlinedIcon fontSize="small"/>}
                     </IconButton>}
                     <IconButton onClick={openComments} className={classes.buttonLeft} aria-label='Comments'>
                         <CommentIcon fontSize="small"/>
@@ -105,6 +94,6 @@ export default function MovieCard(props) {
                 </CardActions>
             </Card>
         </Paper>
-        ),[detail.watchlist, detail.like, classes])
+        ),[watchlist, like, classes, urls])
     )
 }
