@@ -1,7 +1,6 @@
-import React,{useState, useEffect,} from 'react';
+import React,{useState} from 'react';
 import MainPage from '../src/components/MainPage';
 import fetch from 'isomorphic-unfetch';
-import path from '../src/path';
 
 const IndexPage = () => {
   const [movies, setMovies]=useState([]);

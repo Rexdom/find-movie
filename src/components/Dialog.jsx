@@ -62,6 +62,7 @@ export default function DetailDialog(props) {
   const [input, setInput]=useState('');
   const classes = useStyles();
   const { isLogIn } = useContext(UserContext);
+  const [prevIsLogIn, setPrevIsLogin] = useState(isLogIn);
 
   const handleClose = () => {
     props.onClose();
@@ -154,7 +155,8 @@ export default function DetailDialog(props) {
   }
 
   useEffect(()=>{
-    if (prev.id !== data.id){
+    if (prev.id !== data.id || prevIsLogIn!==isLogIn){
+      setPrevIsLogin(isLogIn);
       setComments(null);
       setDetails(null);
       setPrev({open:open, id:data.id});
@@ -219,7 +221,7 @@ export default function DetailDialog(props) {
                     />
                     {details.score && 
                     <div className={classes.scoreWrapper}>
-                      <Typography>Score: </Typography>
+                      <Typography>Score:{details.score.length==0?' No score found':' '}</Typography>
                       {details.score.map((obj,index)=>(
                         <div key={index} className={classes.score}>
                           <img src={obj.provider_type.includes('imdb')?'https://img.icons8.com/color/48/000000/imdb.png':'https://img.icons8.com/color/48/000000/tomato.png'} className={classes.scoreIcon}/>

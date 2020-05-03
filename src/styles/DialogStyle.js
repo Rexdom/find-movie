@@ -47,11 +47,13 @@ const DialogStyle = function(theme){
         outerWrapper: {
             minHeight:'10vh',
             width:'70vw',
-            overflow:'hidden'
+            overflow:'hidden',
+            textAlign: 'center'
         },
         innerWrapper: {
             display:'inline-flex',
-            transition:'transform 1s'
+            transition:'transform 1s',
+            textAlign: 'center'
         },
         arrowBack: {
             position:'absolute',
