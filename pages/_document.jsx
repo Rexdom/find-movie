@@ -9,7 +9,7 @@ export default class MyDocument extends Document {
         <Head>
           <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet" />
         </Head>
-        <body>
+        <body style={{overflowX:'hidden'}}>
           <Main />
           <NextScript />
         </body>
