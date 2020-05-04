@@ -1,6 +1,7 @@
 import React,{useState, useEffect, useContext} from 'react';
 import Section from './Section';
 import Dialog from './Dialog';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import styles from '../styles/MainPageStyle';
 import GlobalSnackbar from './GlobalSnackbar';
@@ -15,6 +16,7 @@ export default function MainPage(props) {
       imgSrc_blur, 
       imgSrc,
       fetchMovies,
+      ready
     } = props;
     const [isOpen, setIsOpen]=useState("close");
     const [details, setDetails]=useState(null);
@@ -125,7 +127,9 @@ export default function MainPage(props) {
             <img src={img} className={`${classes.background} ${loaded && classes.progressive}`} onLoad={finishLoad} {...!loaded && {style: { opacity: "0" }}}/>
           </div>
           <div className={classes.withImg}>
-            {sections.map(section=>(
+            {ready ? 
+            <>
+              {sections.map(section=>(
                 <Section 
                     key={section}
                     title={section}
@@ -136,7 +140,10 @@ export default function MainPage(props) {
                     toggleLike={toggleLike}
                     showSnackbar={showSnackbar}
                 />
-            ))}
+              ))}
+            </>:
+            <LinearProgress />}
+            
           </div>
           {details && <Dialog open={isOpen} data={details} toggleWatchlist={toggleWatchlist} toggleLike={toggleLike} switchType={switchType} onClose={handleClose}/>}
           <GlobalSnackbar message={snackMessage}/>

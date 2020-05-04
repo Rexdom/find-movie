@@ -1,33 +1,14 @@
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import SectionPage from '../src/components/SectionPage';
 import fetch from 'isomorphic-unfetch';
 
 const IndexPage = () => {
-  const [movies, setMovies]=useState({
-    watchlist:[],
-    like:[],
-    comment:[]
-  });
-  const [first, setFirst]=useState({
-    watchlist:true,
-    like:true,
-    comment:true
-  })
+  const [movies, setMovies]=useState(null);
+  const [ready, setReady]=useState(false)
 
   function fetchMovies(type) {
     return new Promise((resolve, reject)=> {
-      if (first[type]) {
-        fetch(`/api/discover/${type}`)
-        .then(res=>res.json())
-        .then(data=>{
-          let movies_arr = data.results;
-          if (movies_arr.length>10) {
-            setMovies({...movies,[type]:movies_arr.splice(10)});
-            resolve(movies_arr);
-          }else resolve(movies_arr)
-        }).catch(err=>reject(err))
-        setFirst({...first, [type]:false})
-      } else if (movies[type].length>0) {
+      if (movies[type].length>0) {
         resolve(movies[type].slice(0,10));
         setMovies({...movies, [type]:movies[type].slice(10)});
       } else {
@@ -36,8 +17,19 @@ const IndexPage = () => {
     })
   }
 
+  useEffect(()=>{
+    fetch(`/api/discover`)
+        .then(res=>res.json())
+        .then(data=>{
+          let movies_arr = data.results;
+          setMovies({watchlist:movies_arr[0], like:movies_arr[1], comment:movies_arr[2]});
+          setReady(true);
+        })
+  },[])
+
   return (
     <SectionPage 
+      ready={ready}
       fetchMovies={fetchMovies}
       path='discover'
       imgSrc='/discover.jpg'
