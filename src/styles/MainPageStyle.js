@@ -115,6 +115,9 @@ const MainPageStyle = function(theme, fade) {
                 height: theme.spacing(52),
                 },
             }
+        },
+        section:{
+            marginBottom: '100px',
         }
     }
 };

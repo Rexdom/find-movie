@@ -1,13 +1,17 @@
 import React,{useState, useEffect} from 'react';
 import MainPage from '../../src/components/MainPage';
+import Error from '../../src/components/Error';
 import fetch from 'isomorphic-unfetch';
 
 const SearchPage = ({query, api_url, reject}) => {
   const [movies, setMovies]=useState([]);
   const [page, setPage]=useState(1);
 
+  console.log(page);
+
   useEffect(()=>{
     setPage(1)
+    setMovies([]);
   },[query])
 
   function fetchMovies() {
@@ -35,7 +39,7 @@ const SearchPage = ({query, api_url, reject}) => {
     <>
       {reject
         ?
-        <p>Invalid search request</p>
+        <Error status={"Invalid search request"}/>
         :
         <MainPage 
           fetchMovies={fetchMovies}
@@ -51,8 +55,8 @@ const SearchPage = ({query, api_url, reject}) => {
 export async function getServerSideProps({params}) {
   let query=decodeURIComponent(params.keyword);
   let reject=false;
-  let api_url=`/api/search/${query}/`
-  if (!query.match(/^[\d\w\s\-+*?$&()"']+$/)) {
+  let api_url=`/api/search/${encodeURIComponent(params.keyword)}/`
+  if (!query.match(/^[\d\w\s\-+*?#@$&()"']+$/)) {
     reject=true;
   }
   return {

@@ -14,7 +14,7 @@ export default function Error(props) {
             <div className={classes.headerBackground}></div>
             <div className={classes.message}>
                 <h1>Error!!</h1>
-                <h2>Status Code: {props.statusCode||'404'}</h2>
+                <h2>Status: {props.statusCode||'404'}</h2>
             </div>
         </>
     )   

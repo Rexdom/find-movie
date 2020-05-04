@@ -4,6 +4,7 @@ import Loading from '../components/Loading';
 import Dialog from './Dialog';
 import { makeStyles, fade } from '@material-ui/core/styles';
 import styles from '../styles/MainPageStyle';
+import GlobalSnackbar from './GlobalSnackbar';
 import UserContext from '../../lib/UserContext';
 
 const useStyles = makeStyles(theme => ({
@@ -29,6 +30,7 @@ export default function MainPage(props) {
     const observer=useRef(null);
     const classes = useStyles();
     const { isLogIn } = useContext(UserContext);
+    const [snackMessage, setSnackMessage] = useState({});
 
     function getMovies() {
       return new Promise(async (resolve, reject)=> {
@@ -50,36 +52,46 @@ export default function MainPage(props) {
     }
 
     function toggleWatchlist(id, details, status) {
-      fetch('/api/update',{
-        method:'post',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
-            'Accept': 'application/json, text/plain, */*',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            type: 'watch',
-            status,
-            id,
-            details,
-        })
+      return new Promise(async (resolve, reject)=> {
+        fetch('/api/update',{
+          method:'post',
+          headers: {
+              'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
+              'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              type: 'watch',
+              status,
+              id,
+              details,
+          })
+        }).then(res=>{
+          if (res.status===200) resolve(true)
+          else resolve(false)
+        }).catch((e)=>reject(false))
       })
     }
 
     function toggleLike(id, details, status) {
-      fetch('/api/update',{
-        method:'post',
-        headers: {
-            'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
-            'Accept': 'application/json, text/plain, */*',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            type: 'like',
-            status,
-            id,
-            details,
-        })
+      return new Promise(async (resolve, reject)=> {
+        fetch('/api/update',{
+          method:'post',
+          headers: {
+              'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
+              'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              type: 'like',
+              status,
+              id,
+              details,
+          })
+        }).then(res=>{
+          if (res.status===200) resolve(true)
+          else resolve(false)
+        }).catch((e)=>reject(false))
       })
     }
 
@@ -100,6 +112,10 @@ export default function MainPage(props) {
         setLoaded(true);
     }
 
+    function showSnackbar(message, type) {
+      setSnackMessage({message, type});
+    }
+
     useEffect(()=>{
       setLoaded(false);
       setImg(imgSrc);
@@ -108,6 +124,7 @@ export default function MainPage(props) {
     useEffect(() => {
       let isMount = true;
       if (isLogIn && path===prevPath){
+        showSnackbar("Log in success", "success");
         fetch('/api/getlist',{
           method: 'get',
           headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
@@ -131,7 +148,10 @@ export default function MainPage(props) {
       }else if (path!==prevPath){
         setPrevPath(path);
         setShownMovies([]);
-      }else setRecord(null)
+      }else if (prevPath!==null){
+        showSnackbar("Log in to enjoy more features!", "info");
+        setRecord(null)
+      }
 
       return ()=>{
         isMount = false;
@@ -157,7 +177,7 @@ export default function MainPage(props) {
           });
         },{
           root:null,
-          rootMargin:"0 0 1000px 0",
+          rootMargin:"0px 0px 1000px 0px",
           threshold:[0.1]
         })
     
@@ -185,6 +205,7 @@ export default function MainPage(props) {
           toggleWatchlist={toggleWatchlist}
           toggleLike={toggleLike}
           onClick={expandDetails}
+          showSnackbar={showSnackbar}
         />
       )
     }),[shownMovies, record])
@@ -209,6 +230,7 @@ export default function MainPage(props) {
           <Loading loading={status}/>
           {status!="End" && <div key={path} id='page-bottom-boundary' className={classes.checkLoading} ref={lazyNode}></div>}
           {details && <Dialog open={isOpen} data={details} toggleWatchlist={toggleWatchlist} toggleLike={toggleLike} switchType={switchType} onClose={handleClose}/>}
+          <GlobalSnackbar message={snackMessage}/>
         </main>
     );
 }

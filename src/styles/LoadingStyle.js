@@ -4,6 +4,9 @@ const LoadingStyle = function(theme){
             height: '50px',
             marginTop: '20px',
             color: theme.palette.text.disabled
+        },
+        action: {
+            height: '100%'
         }
     }
 }

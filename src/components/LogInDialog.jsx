@@ -164,7 +164,7 @@ export default function AlertDialogSlide(props) {
                         id="new-standard-password-input"
                         label="Password"
                         type="password"
-                        helperText={err.password||"Length should have at least 6 characters"}
+                        helperText={err.password||"Password should have at least 6 characters"}
                         className={classes.inputPass}
                         value={password}
                         onChange={changePassword}

@@ -1,4 +1,4 @@
-import React,{ useState, useEffect, } from 'react';
+import React,{ useState, useEffect } from 'react';
 import App from 'next/app';
 import Head from 'next/head';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -11,6 +11,7 @@ import Footer from '../src/components/Footer';
 import Router from 'next/router';
 import UserContext from '../lib/UserContext';
 
+
 export default function MyApp ({ Component, pageProps }) {
     const [theme, setTheme] = useState(themeObj);
     const [showName, setShowName] = useState(false);
@@ -22,7 +23,7 @@ export default function MyApp ({ Component, pageProps }) {
         { title: 'New', url:'/[name]', url_as: '/new' }
     ];
 
-    function changeLogIn(token=null, message=null) {
+    function changeLogIn(token=null) {
         if (token) {
             let date = new Date()
             localStorage.setItem('login',JSON.stringify({
@@ -72,11 +73,16 @@ export default function MyApp ({ Component, pageProps }) {
                 method: 'get',
                 headers: new Headers({ Authorization: `Bearer ${login.token}` })
             }).then(res=>{
-                if (res.status===200) setIsLogIn(true)
-                else {
+                if (res.status===200) {
+                    setIsLogIn(true);
+                } else {
                     setIsLogIn(false);
+                    localStorage.removeItem('login');
                 }
-            }).catch(()=>setIsLogIn(false))
+            }).catch(()=>{
+                setIsLogIn(false);
+                localStorage.removeItem('login');
+            })
         }
 
         const stored_showMovieName = JSON.parse(localStorage.getItem('showMovieName'));
@@ -116,7 +122,7 @@ export default function MyApp ({ Component, pageProps }) {
                 toggleShowName={toggleShowName}
             /> 
             <Container maxWidth='lg'>
-                <UserContext.Provider value={ {showName, isLogIn } }>
+                <UserContext.Provider value={ {showName, isLogIn} }>
                     <Component {...pageProps} />
                 </UserContext.Provider>
             </Container>

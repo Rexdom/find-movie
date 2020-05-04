@@ -64,7 +64,7 @@ const DialogStyle = function(theme){
             right:0,
         },
         offerContainer: {
-            padding:'2%'
+            padding:'3%'
         },
         commentUser:{
             lineHeight:'0.8',

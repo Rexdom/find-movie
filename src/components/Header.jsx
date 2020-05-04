@@ -49,7 +49,7 @@ export default function Header(props) {
 
     function submit(e) {
         e.preventDefault();
-        if (input.match(/^[\d\w\s\-+*?$&()"']+$/)) router.push('/search/[keyword]',`/search/${encodeURIComponent(input)}`);
+        if (input.match(/^[\d\w\s\-+*?#@$&()"']+$/)) router.push('/search/[keyword]',`/search/${encodeURIComponent(input)}`);
         else return
     }
 
@@ -78,7 +78,7 @@ export default function Header(props) {
     }
 
     function logout(){
-        changeLogIn(null, 'Log out success');
+        changeLogIn(null);
     }
 
   return (

@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MovieCard(props) {
     const classes= useStyles();
-    const { id, name, date, poster, description, inWatchlist ,isLiked ,toggleWatchlist, toggleLike } = props;
+    const { id, name, date, poster, description, inWatchlist ,isLiked ,toggleWatchlist, toggleLike, showSnackbar } = props;
     const [watchlist, setWatchlist] = useState(inWatchlist);
     const [like, setLike] = useState(isLiked);
     const [urls, setUrls]=useState({large:'',medium:'',small:''});
@@ -35,13 +35,23 @@ export default function MovieCard(props) {
     }
 
     function changeWatchlist() {
-        toggleWatchlist(id, {id, title:name, release_date:date, poster_path:poster}, !watchlist)
-        setWatchlist(!watchlist);
+        toggleWatchlist(id, {id, title:name, release_date:date, poster_path:poster}, !watchlist).then(res=>{
+            if (res) {
+                showSnackbar(`"${name}" is ${!watchlist?'added to watchlist':'removed from watchlist'}`,'success')
+                setWatchlist(!watchlist)
+            }
+            else showSnackbar(`Unable to ${!watchlist?`added "${name}"`:`removed "${name}"`}`,'error')
+        })   
     }
 
     function changeLike() {
-        toggleLike(id, {id, title:name, release_date:date, poster_path:poster}, !like)
-        setLike(!like);
+        toggleLike(id, {id, title:name, release_date:date, poster_path:poster}, !like).then(res=>{
+            if (res) {
+                showSnackbar(`You've ${!like?'liked':'unliked'} "${name}"`,'success')
+                setLike(!like);
+            }
+            else showSnackbar(`Failed to ${!like?`like "${name}"`:`unlike "${name}"`}`,'error')
+        })
     }
 
     useEffect(()=>{

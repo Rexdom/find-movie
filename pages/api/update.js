@@ -11,18 +11,18 @@ export default async (req, res) => {
                 const movieRef = db.collection('movies');
                 const { type, status, id, details } = req.body;
 
-                userRef.collection(type).doc(id.toString()).get()
-                    .then(doc=>{
+                await userRef.collection(type).doc(id.toString()).get()
+                    .then(async (doc)=>{
                         if (status && !doc.exists) {
-                            userRef.collection(type).doc(id.toString()).set({time: firebase.firestore.FieldValue.serverTimestamp()});
-                            movieRef.doc(id.toString()).set({ info:details, [type]:firebase.firestore.FieldValue.increment(1) }, { merge:true });
+                            await userRef.collection(type).doc(id.toString()).set({time: firebase.firestore.FieldValue.serverTimestamp()});
+                            await movieRef.doc(id.toString()).set({ info:details, [type]:firebase.firestore.FieldValue.increment(1) }, { merge:true });
                         }else if (!status && doc.exists) {
-                            userRef.collection(type).doc(id.toString()).delete();
-                            movieRef.doc(id.toString()).set({ info:details, [type]:firebase.firestore.FieldValue.increment(-1) }, { merge:true });
+                            await userRef.collection(type).doc(id.toString()).delete();
+                            await movieRef.doc(id.toString()).set({ info:details, [type]:firebase.firestore.FieldValue.increment(-1) }, { merge:true });
                         }
                     })
-                res.send("ok");
-            } else res.send("fail")
-        } else res.send("fail");
-    } else res.send("fail");
+                res.status(200).send("ok");
+            } else res.status(400).send("fail")
+        } else res.status(400).send("fail");
+    } else res.status(400).send("fail");
 }
