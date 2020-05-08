@@ -54,7 +54,7 @@ export default function DetailDialog(props) {
   const [prev, setPrev]=useState({type:'detail', id:''});
   const [comments, setComments]=useState(null);
   const [details, setDetails]=useState(null);
-  const [userRating, setUserRating]=useState(null);
+  const [userRating, setUserRating]=useState(0);
   const [tab1, setTab1]=useState(0);
   const [tab2, setTab2]=useState(0);
   const [videoIndex, setVideoIndex]=useState(0);
@@ -281,7 +281,7 @@ export default function DetailDialog(props) {
                     {/* Display user rating and average rating */}
                     <div className={classes.rating}> 
                       <Typography>Your Rating</Typography>
-                      {isLogIn ? <StarRating rateMovie={rateMovie} rating={userRating} precision={1}/> : <Typography color="textSecondary">Log in to rate the movie</Typography>}
+                      {isLogIn ? userRating!==0 ? <StarRating rateMovie={rateMovie} rating={userRating} precision={1}/> : <Typography color="textSecondary">Loading</Typography> : <Typography color="textSecondary">Log in to rate the movie</Typography>}
                       <Typography>Average User Rating</Typography>
                       <StarRating rating={data.score||0} precision={0.1}/>
                     </div>
