@@ -95,6 +95,14 @@ export default function MainPage(props) {
       })
     }
 
+    // Update average score when receive a new one
+    function updateScores(score, index, id) {
+      let temp=[...shownMovies];
+      if (temp[index].id=id) temp[index].score=score;
+      setShownMovies(temp);
+      setDetails({...details,score})
+    }
+
     function expandDetails(obj, type) {
       setDetails(obj);
       setIsOpen(type);
@@ -130,7 +138,6 @@ export default function MainPage(props) {
           headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
         }).then((res)=>res.json())
           .then((data)=>{
-            console.log(data)
             if (isMount) setRecord(data)
         })
       }else if (isLogIn && path!==prevPath){
@@ -142,7 +149,6 @@ export default function MainPage(props) {
           headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
         }).then((res)=>res.json())
           .then((data)=>{
-            console.log(data)
             if (isMount) setRecord(data)
         })
       }else if (path!==prevPath){
@@ -194,12 +200,14 @@ export default function MainPage(props) {
     const movieCards = useMemo(()=>shownMovies.map((movie, index)=>{
       return(
         <MovieCard 
-          key={index} 
+          key={index}
+          index={index}
           id={movie.id}
           name={movie.title} 
           date={movie.release_date}
           poster={movie.poster_path}
           description={movie.overview}
+          score={movie.score}
           inWatchlist={record ? record.watch.includes(movie.id) : null}
           isLiked={record ? record.like.includes(movie.id) : null}
           toggleWatchlist={toggleWatchlist}
@@ -229,7 +237,14 @@ export default function MainPage(props) {
           </div>
           <Loading loading={status}/>
           {status!="End" && <div key={path} id='page-bottom-boundary' className={classes.checkLoading} ref={lazyNode}></div>}
-          {details && <Dialog open={isOpen} data={details} toggleWatchlist={toggleWatchlist} toggleLike={toggleLike} switchType={switchType} onClose={handleClose}/>}
+          {details && 
+            <Dialog 
+              open={isOpen} 
+              data={details} 
+              updateScore={updateScores}
+              switchType={switchType} 
+              onClose={handleClose}
+            />}
           <GlobalSnackbar message={snackMessage}/>
         </main>
     );

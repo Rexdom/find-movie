@@ -12,6 +12,7 @@ export default function Section(props) {
     const {
       title,
       fetchMovies,
+      update,
       record,
       expandDetails,
       toggleWatchlist,
@@ -63,14 +64,33 @@ export default function Section(props) {
           }
     },[status])
 
+    useEffect(()=>{
+      if (update) {
+        let temp=[...shownMovies];
+        if (temp[update.index]&&temp[update.index].id===update.id){
+          temp[update.index].score=update.score;
+          setShownMovies(temp);
+        }else{
+          for (let i in temp) {
+            if (temp[i].id===update.id) {
+              temp[i].score=update.score;
+              setShownMovies(temp);
+            }
+          }
+        }  
+      }
+    },[update])
+
     const movieCards = useMemo(()=>shownMovies.map((movie, index)=>{
       return(
         <MovieCard 
           key={index} 
+          index={index}
           id={movie.id}
           name={movie.title}
           date={movie.release_date}
           poster={movie.poster_path}
+          score={movie.score}
           inWatchlist={record ? record.watch.includes(movie.id) : null}
           isLiked={record ? record.like.includes(movie.id) : null}
           toggleWatchlist={toggleWatchlist}

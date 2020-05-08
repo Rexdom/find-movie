@@ -49,6 +49,14 @@ const MovieCardStyle = function(theme, fade){
         hideName: {
             display:'none'
         },
+        rating: {
+            position: 'absolute',
+            display:'flex',
+            alignItems:'center',
+            bottom: '10px',
+            right: '0',
+            backgroundColor: fade(theme.palette.background.paper, 0.7)
+        },
         actions: {
             height: '56px',
             padding: 0,

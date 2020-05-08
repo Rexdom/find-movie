@@ -20,7 +20,6 @@ const DialogStyle = function(theme){
             marginBottom: '15px',
         },
         scoreWrapper: {
-            marginBottom: '15px',
             display: 'flex',
         },
         score: {
@@ -32,6 +31,9 @@ const DialogStyle = function(theme){
             width: '25px',
             height: '25px',
             margin: '0 2px',
+        },
+        rating: {
+            marginBottom: '15px',
         },
         contentBackground: {
             backgroundColor: theme.palette.divider,

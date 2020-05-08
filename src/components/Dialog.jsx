@@ -23,6 +23,7 @@ import Slide from '@material-ui/core/Slide';
 import styles from '../styles/DialogStyle';
 import UserContext from '../../lib/UserContext';
 import YoutubeVideo from '../components/YoutubeVideo';
+import StarRating from '../components/StarRating';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -49,10 +50,11 @@ function TabPanel(props) {
 }
 
 export default function DetailDialog(props) {
-  const {data, open, switchType}=props;
+  const {data, open, switchType, updateScore}=props;
   const [prev, setPrev]=useState({type:'detail', id:''});
   const [comments, setComments]=useState(null);
   const [details, setDetails]=useState(null);
+  const [userRating, setUserRating]=useState(null);
   const [tab1, setTab1]=useState(0);
   const [tab2, setTab2]=useState(0);
   const [videoIndex, setVideoIndex]=useState(0);
@@ -113,6 +115,44 @@ export default function DetailDialog(props) {
         })
   }
 
+  //function to get user's rating
+  function fetchUserRating() {
+    fetch(`/api/getuserRate?id=${data.id}`,{
+      method:'get',
+      headers: {
+          'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json'
+      }
+    }).then((res)=>res.json())
+        .then((obj)=>{
+          setUserRating(obj.score);
+        })
+  }
+
+  //functions to call when user rate the movie
+  function rateMovie(value) {
+    fetch(`api/rateMovie`,{
+      method:'post',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: data.id,
+        score:value
+      })
+    }).then(res=>res.json())
+    .then(json=>{
+      if (json.status==="ok") {
+        //pass the score and its index in list view for update
+        updateScore(json.new_score, data.index, data.id)
+        setUserRating(value)
+      }
+    }) 
+  }
+
   function changeInput(e) {
     setInput(e.target.value)
   }
@@ -159,9 +199,13 @@ export default function DetailDialog(props) {
       setPrevIsLogin(isLogIn);
       setComments(null);
       setDetails(null);
+      setUserRating(null);
       setPrev({open:open, id:data.id});
-      if (open==='details') fetchDetails();
-      else {
+      if (open==='details') {
+        fetchDetails();
+        // Get user's rating if logged in
+        if (isLogIn) fetchUserRating();
+      } else {
         fetch(`/api/comments/${data.id}`)
             .then((res)=>res.json())
             .then((json)=>{
@@ -170,7 +214,11 @@ export default function DetailDialog(props) {
       }
     } else if (prev.open !== open){
       if (open==='details'){
-        if (!details) fetchDetails()
+        if (!details) {
+          fetchDetails()
+          // Get user's rating if logged in
+          if (isLogIn) fetchUserRating();
+        }
       } else if (open==='comments'){
         if (!comments) {
           fetch(`/api/comments/${data.id}`)
@@ -229,7 +277,15 @@ export default function DetailDialog(props) {
                         </div>
                       ))}
                     </div>}
-                    
+
+                    {/* Display user rating and average rating */}
+                    <div className={classes.rating}> 
+                      <Typography>Your Rating</Typography>
+                      {isLogIn ? <StarRating rateMovie={rateMovie} rating={userRating} precision={1}/> : <Typography color="textSecondary">Log in to rate the movie</Typography>}
+                      <Typography>Average User Rating</Typography>
+                      <StarRating rating={data.score||0} precision={0.1}/>
+                    </div>
+
                     {(details.videos||details.photos) && 
                       <div className={classes.contentBackground}>
                         <Paper variant='outlined' square>

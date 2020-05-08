@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import IconButton from '@material-ui/core/IconButton';
+import Rating from '@material-ui/lab/Rating';
 import ThumbUpAltOutlinedIcon from '@material-ui/icons/ThumbUpAltOutlined';
 import ThumbUpAltIcon from '@material-ui/icons/ThumbUpAlt';
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
@@ -20,18 +21,18 @@ const useStyles = makeStyles(theme => ({
 
 export default function MovieCard(props) {
     const classes= useStyles();
-    const { id, name, date, poster, description, inWatchlist ,isLiked ,toggleWatchlist, toggleLike, showSnackbar } = props;
+    const { index, id, name, date, poster, description, score, inWatchlist ,isLiked ,toggleWatchlist, toggleLike, showSnackbar } = props;
     const [watchlist, setWatchlist] = useState(inWatchlist);
     const [like, setLike] = useState(isLiked);
     const [urls, setUrls]=useState({large:'',medium:'',small:''});
     const {showName} = useContext(UserContext);
 
     function watchDetail() {
-        props.onClick({ id, name, date, poster, description }, 'details');
+        props.onClick({ index, id, name, date, poster, description, score }, 'details');
     };
 
     function openComments() {
-        props.onClick({ id, name, date, poster, description }, 'comments');
+        props.onClick({ index, id, name, date, poster, description, score }, 'comments');
     }
 
     function changeWatchlist() {
@@ -90,6 +91,12 @@ export default function MovieCard(props) {
                     >
                         {name.length>34?name.slice(0,31)+"...":name}
                     </Typography>
+                    {/* show rating in list view */}
+                    <Typography className={classes.rating}>
+                        Rating:{score?
+                            <><Rating size='small' max={1} precision={0.1} value={score/10} readOnly />{score}</>:
+                            'N/A'}
+                    </Typography>
                 </CardActionArea>
                 <CardActions disableSpacing className={classes.actions}>
                     {watchlist!==null && <IconButton onClick={changeWatchlist} aria-label='Add to Watchlist'>
@@ -104,6 +111,6 @@ export default function MovieCard(props) {
                 </CardActions>
             </Card>
         </Paper>
-        ),[watchlist, like, classes, urls])
+        ),[watchlist, like, classes, urls, score])
     )
 }

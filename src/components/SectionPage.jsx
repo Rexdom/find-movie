@@ -23,6 +23,7 @@ export default function MainPage(props) {
     const [record, setRecord]=useState(null);
     const [img, setImg]=useState("");
     const [loaded, setLoaded]=useState(false);
+    const [update, setUpdate]=useState();
     const classes = useStyles();
     const { isLogIn } = useContext(UserContext);
     const [snackMessage, setSnackMessage] = useState({});
@@ -72,6 +73,12 @@ export default function MainPage(props) {
       })
     }
 
+    // Update average score when receive a new one
+    function updateScores(score, index, id) {
+      setDetails({...details,score})
+      setUpdate({score, index, id})
+    }
+
     function expandDetails(obj, type) {
       setDetails(obj);
       setIsOpen(type);
@@ -107,7 +114,6 @@ export default function MainPage(props) {
           headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
         }).then((res)=>res.json())
           .then((data)=>{
-            console.log(data)
             if (isMount) setRecord(data)
         })
       }else {
@@ -134,6 +140,7 @@ export default function MainPage(props) {
                     key={section}
                     title={section}
                     fetchMovies={fetchMovies.bind(null,section)}
+                    update={update}
                     record={record}
                     expandDetails={expandDetails}
                     toggleWatchlist={toggleWatchlist}
@@ -145,7 +152,16 @@ export default function MainPage(props) {
             <LinearProgress />}
             
           </div>
-          {details && <Dialog open={isOpen} data={details} toggleWatchlist={toggleWatchlist} toggleLike={toggleLike} switchType={switchType} onClose={handleClose}/>}
+          {details && 
+            <Dialog 
+              open={isOpen} 
+              data={details} 
+              updateScore={updateScores}
+              toggleWatchlist={toggleWatchlist} 
+              toggleLike={toggleLike} 
+              switchType={switchType} 
+              onClose={handleClose}
+            />}
           <GlobalSnackbar message={snackMessage}/>
         </main>
     );

@@ -11,7 +11,8 @@ export default async (req,res) => {
             try{
                 await Promise.all([
                     firebase.firestore().collection('users').doc(email).collection('watch').doc('0').set({initialize:true}),
-                    firebase.firestore().collection('users').doc(email).collection('like').doc('0').set({initialize:true})
+                    firebase.firestore().collection('users').doc(email).collection('like').doc('0').set({initialize:true}),
+                    // firebase.firestore().collection('users').doc(email).collection('score').doc('0').set({initialize:true}),
                 ])
             } catch(e) {
                 res.status(400).json({status:'fail', err:e})

@@ -18,8 +18,8 @@ export default async (req,res) => {
                 }else return null;
             })
 
-            if (detailId) results = await search(detailId)
-            else results = await search(id, name, db)
+            if (detailId) results = await search(detailId);
+            else results = await search(id, name, db);
 
             if (results) {
                 const returnResults = handleResults(results, verify);

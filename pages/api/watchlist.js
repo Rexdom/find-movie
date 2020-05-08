@@ -27,7 +27,12 @@ export default async (req, res) => {
                         }
                     }
                     const snapshots = await Promise.all(queries);
-                    const movies = snapshots.map(snapshot=>snapshot.docs.map(doc=>doc.data().info)).flat();
+                    const movies = snapshots.map(snapshot=>snapshot.docs.map(doc=>{
+                        return Object.assign(
+                            {...doc.data().info},
+                            {score:doc.data().total_score?(doc.data().total_score/doc.data().rate_user).toFixed(1):0}
+                        )
+                    })).flat();
                     data= {results: movies};
                 } catch(e) {
                     error=e
