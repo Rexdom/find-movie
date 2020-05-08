@@ -26,7 +26,7 @@ export default async (req, res) => {
                 let comments;
                 try{
                     await movieRef.get().then(async (doc)=>{
-                        if (doc.exists&&doc.comments) {
+                        if (doc.exists&&doc.data().comments) {
                             await Promise.all([
                                 movieRef.set({info: req.body.info,comments:firebase.firestore.FieldValue.arrayUnion(obj)},{merge:true}),
                                 movieRef.update('num_of_comments',firebase.firestore.FieldValue.increment(1))
