@@ -97,7 +97,7 @@ export default function DetailDialog(props) {
   }
 
   function fetchDetails() {
-    fetch(`/api/details`,{
+    fetch(`/api/info/details`,{
       method:'post',
       headers: {
           'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,

@@ -60,7 +60,7 @@ export default function AlertDialogSlide(props) {
         setErr(error);
         if (Object.keys(error).length) setLoading(false)
         else {
-            fetch(`/api/${type==="Log In"?'login':'signup'}`,{
+            fetch(`/api/user/${type==="Log In"?'login':'signup'}`,{
                 method:'post',
                 headers: {
                     'Content-Type': 'application/json'

@@ -133,7 +133,7 @@ export default function MainPage(props) {
       let isMount = true;
       if (isLogIn && path===prevPath){
         showSnackbar("Log in success", "success");
-        fetch('/api/getlist',{
+        fetch('/api/info/getlist',{
           method: 'get',
           headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
         }).then((res)=>res.json())
@@ -144,7 +144,7 @@ export default function MainPage(props) {
         setPrevPath(path);
         setShownMovies([]);
         setStatus("Not loading");
-        fetch('/api/getlist',{
+        fetch('/api/info/getlist',{
           method: 'get',
           headers: new Headers({ Authorization: `Bearer ${JSON.parse(localStorage.getItem('login')).token}` })
         }).then((res)=>res.json())
