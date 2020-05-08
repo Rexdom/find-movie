@@ -132,7 +132,7 @@ export default function DetailDialog(props) {
 
   //functions to call when user rate the movie
   function rateMovie(value) {
-    fetch(`api/rateMovie`,{
+    fetch(`/api/rateMovie`,{
       method:'post',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('login')?JSON.parse(localStorage.getItem('login')).token:''}`,

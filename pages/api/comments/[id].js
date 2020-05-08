@@ -25,12 +25,21 @@ export default async (req, res) => {
                 let error;
                 let comments;
                 try{
-                    await movieRef.set({
-                        info: req.body.info,
-                        comments:firebase.firestore.FieldValue.arrayUnion(obj),
-                        num_of_comments:firebase.firestore.FieldValue.increment(1),
-                    },{merge:true})
-                    comments = await movieRef.get().then(doc=>doc.data().comments)
+                    await movieRef.get().then(async (doc)=>{
+                        if (doc.exists&&doc.comments) {
+                            await Promise.all([
+                                movieRef.set({info: req.body.info,comments:firebase.firestore.FieldValue.arrayUnion(obj)},{merge:true}),
+                                movieRef.update('num_of_comments',firebase.firestore.FieldValue.increment(1))
+                            ])
+                        }else {
+                            movieRef.set({
+                                info: req.body.info,
+                                comments:firebase.firestore.FieldValue.arrayUnion(obj),
+                                num_of_comments:firebase.firestore.FieldValue.increment(1)
+                            },{merge:true})
+                        }
+                        comments = await movieRef.get().then(doc=>doc.data().comments)
+                    })
                 } catch(e) {
                     error=e
                 }

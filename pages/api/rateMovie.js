@@ -13,16 +13,29 @@ export default async (req, res) => {
                 let error;
                 let new_score;
                 try{
-                    await Promise.all([
-                        movieRef.set({
-                            rate_user:firebase.firestore.FieldValue.increment(1),
-                            total_score:firebase.firestore.FieldValue.increment(score),
-                        },{merge:true}),
-                        userRef.set({value:score})
-                    ])
-                    new_score = await movieRef.get().then(doc=>{
-                        return (doc.data().total_score/doc.data().rate_user).toFixed(1)
-                    })
+                    await movieRef.get().then(async (doc)=>{
+                        if (doc.exists&&doc.data().total_score){
+                            await Promise.all([
+                                movieRef.update('rate_user',firebase.firestore.FieldValue.increment(1)),
+                                movieRef.update('total_score',firebase.firestore.FieldValue.increment(score)),
+                                userRef.set({value:score})
+                            ])
+                            new_score = await movieRef.get().then(doc=>{
+                                return (doc.data().total_score/doc.data().rate_user).toFixed(1)
+                            })
+                    }else {
+                        await Promise.all([
+                            movieRef.set({
+                                rate_user:firebase.firestore.FieldValue.increment(1),
+                                total_score:firebase.firestore.FieldValue.increment(score),
+                            },{merge:true}),
+                            userRef.set({value:score})
+                        ])
+                        new_score = await movieRef.get().then(doc=>{
+                            return (doc.data().total_score/doc.data().rate_user).toFixed(1)
+                        })
+                    }})
+                    
                 } catch(e) {
                     error=e
                 }
