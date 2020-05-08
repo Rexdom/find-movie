@@ -20,7 +20,7 @@ export default function Section(props) {
       showSnackbar,
     } = props;
     const [shownMovies, setShownMovies]=useState([]);
-    const [status, setStatus]=useState("loading");
+    const [status, setStatus]=useState("not loading");
     const classes = useStyles();
 
     function getMovies() {
@@ -36,7 +36,7 @@ export default function Section(props) {
     }
 
     function handleResults(movies) {
-      if (movies.length===10) {
+      if (movies.length>=10) {
         setShownMovies([...shownMovies, ...movies]);
         setStatus("not loading");
       } else {
@@ -46,23 +46,31 @@ export default function Section(props) {
     }
 
     function manualLoad() {
-        setStatus("loading");
+      if (status==="not loading") {
+        getMovies()
+        .then((movies)=>{
+            handleResults(movies);
+        }).catch((err)=>{
+            if (shownMovies.length>0) setStatus("End");
+            else setStatus("Error");
+        });
+      }
     }
 
-    useEffect(()=>{
-        let isMount=true;
-        if (status==="loading") {
-            getMovies()
-            .then((movies)=>{
-                if (isMount) handleResults(movies);
-            }).catch((err)=>{
-                if (isMount) setStatus("Error");
-            });
-        }
-        return ()=>{
-            isMount = false;
-          }
-    },[status])
+    // useEffect(()=>{
+    //     let isMount=true;
+    //     if (status==="loading") {
+    //         getMovies()
+    //         .then((movies)=>{
+    //             if (isMount) handleResults(movies);
+    //         }).catch((err)=>{
+    //             if (isMount) setStatus("Error");
+    //         });
+    //     }
+    //     return ()=>{
+    //         isMount = false;
+    //       }
+    // },[status])
 
     useEffect(()=>{
       if (update) {

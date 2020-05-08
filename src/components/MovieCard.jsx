@@ -94,7 +94,7 @@ export default function MovieCard(props) {
                     {/* show rating in list view */}
                     <Typography className={classes.rating}>
                         Rating:{score?
-                            <><Rating size='small' max={1} precision={0.1} value={score/10} readOnly />{score}</>:
+                            <><Rating size='small' max={1} precision={0.1} value={parseInt(score)/10} readOnly />{score}</>:
                             'N/A'}
                     </Typography>
                 </CardActionArea>

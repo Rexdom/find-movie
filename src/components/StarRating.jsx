@@ -23,7 +23,7 @@ export default function StarRating(props) {
         <div className={classes.root}>
             <Rating
                 name="hover-feedback"
-                value={rating}
+                value={parseInt(rating)}
                 max={10}
                 precision={precision}
                 size="small"

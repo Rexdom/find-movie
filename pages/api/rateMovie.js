@@ -21,7 +21,7 @@ export default async (req, res) => {
                         userRef.set({value:score})
                     ])
                     new_score = await movieRef.get().then(doc=>{
-                        return doc.data().total_score/doc.data().rate_user
+                        return (doc.data().total_score/doc.data().rate_user).toFixed(1)
                     })
                 } catch(e) {
                     error=e
