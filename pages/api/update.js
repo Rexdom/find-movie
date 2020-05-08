@@ -7,18 +7,32 @@ export default async (req, res) => {
         if (req.method==='POST') {
             let verify = jwtauth(req);
             if (verify) {
-                const userRef = db.collection('users').doc(verify.user);
-                const movieRef = db.collection('movies');
                 const { type, status, id, details } = req.body;
+                const userRef = db.collection('users').doc(verify.user);
+                const movieRef = db.collection('movies').doc(id.toString());
+                
 
                 await userRef.collection(type).doc(id.toString()).get()
                     .then(async (doc)=>{
                         if (status && !doc.exists) {
                             await userRef.collection(type).doc(id.toString()).set({time: firebase.firestore.FieldValue.serverTimestamp()});
-                            await movieRef.doc(id.toString()).set({ info:details, [type]:firebase.firestore.FieldValue.increment(1) }, { merge:true });
+                            await movieRef.get().then(async (doc)=>{
+                                if (doc.exists && doc.data()[type]) await Promise.all([
+                                    movieRef.set({ info:details},{ merge:true }),
+                                    movieRef.update(type,firebase.firestore.FieldValue.increment(1))
+                                ])
+                                else await movieRef.set({ info:details, [type]:firebase.firestore.FieldValue.increment(1) }, { merge:true });
+                            })
+                            
                         }else if (!status && doc.exists) {
                             await userRef.collection(type).doc(id.toString()).delete();
-                            await movieRef.doc(id.toString()).set({ info:details, [type]:firebase.firestore.FieldValue.increment(-1) }, { merge:true });
+                            await movieRef.get().then(async (doc)=>{
+                                if (doc.exists && doc.data()[type]) await Promise.all([
+                                    movieRef.set({ info:details},{ merge:true }),
+                                    movieRef.update(type,firebase.firestore.FieldValue.increment(-1))
+                                ])
+
+                            })
                         }
                     })
                 res.status(200).send("ok");
