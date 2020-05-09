@@ -5,11 +5,11 @@ import { ServerStyleSheets } from '@material-ui/core/styles';
 export default class MyDocument extends Document {
   render() {
     return (
-      <html lang="en">
+      <html lang="en" style={{overflowX:'hidden'}}>
         <Head>
           <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet" />
         </Head>
-        <body style={{overflowX:'hidden'}}>
+        <body>
           <Main />
           <NextScript />
         </body>

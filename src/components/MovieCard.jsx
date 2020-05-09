@@ -23,7 +23,9 @@ export default function MovieCard(props) {
     const classes= useStyles();
     const { index, id, name, date, poster, description, score, inWatchlist ,isLiked ,toggleWatchlist, toggleLike, showSnackbar } = props;
     const [watchlist, setWatchlist] = useState(inWatchlist);
+    const [loadingWatch, setLoadingWatch] = useState(false);
     const [like, setLike] = useState(isLiked);
+    const [loadingLike, setLoadingLike] = useState(false);
     const [urls, setUrls]=useState({large:'',medium:'',small:''});
     const {showName} = useContext(UserContext);
 
@@ -36,22 +38,32 @@ export default function MovieCard(props) {
     }
 
     function changeWatchlist() {
+        setLoadingWatch(true);
         toggleWatchlist(id, {id, title:name, release_date:date, poster_path:poster}, !watchlist).then(res=>{
             if (res) {
                 showSnackbar(`"${name}" is ${!watchlist?'added to watchlist':'removed from watchlist'}`,'success')
                 setWatchlist(!watchlist)
+                setLoadingWatch(false);
             }
-            else showSnackbar(`Unable to ${!watchlist?`added "${name}"`:`removed "${name}"`}`,'error')
+            else {
+                showSnackbar(`Unable to ${!watchlist?`added "${name}"`:`removed "${name}"`}`,'error');
+                setLoadingWatch(false);
+            }
         })   
     }
 
     function changeLike() {
+        setLoadingLike(true);
         toggleLike(id, {id, title:name, release_date:date, poster_path:poster}, !like).then(res=>{
             if (res) {
                 showSnackbar(`You've ${!like?'liked':'unliked'} "${name}"`,'success')
                 setLike(!like);
+                setLoadingLike(false);
             }
-            else showSnackbar(`Failed to ${!like?`like "${name}"`:`unlike "${name}"`}`,'error')
+            else {
+                showSnackbar(`Failed to ${!like?`like "${name}"`:`unlike "${name}"`}`,'error');
+                setLoadingLike(false);
+            }
         })
     }
 
@@ -99,10 +111,10 @@ export default function MovieCard(props) {
                     </Typography>
                 </CardActionArea>
                 <CardActions disableSpacing className={classes.actions}>
-                    {watchlist!==null && <IconButton onClick={changeWatchlist} aria-label='Add to Watchlist'>
+                    {watchlist!==null && <IconButton disabled={loadingWatch} onClick={changeWatchlist} aria-label='Add to Watchlist'>
                         {watchlist ? <BookmarkIcon fontSize="small"/> : <BookmarkBorderIcon fontSize="small"/>}
                     </IconButton>}
-                    {like!==null && <IconButton onClick={changeLike} aria-label='Like'>
+                    {like!==null && <IconButton disabled={loadingLike} onClick={changeLike} aria-label='Like'>
                         {like ? <ThumbUpAltIcon fontSize="small" color="secondary"/> : <ThumbUpAltOutlinedIcon fontSize="small"/>}
                     </IconButton>}
                     <IconButton onClick={openComments} className={classes.buttonLeft} aria-label='Comments'>
@@ -111,6 +123,6 @@ export default function MovieCard(props) {
                 </CardActions>
             </Card>
         </Paper>
-        ),[watchlist, like, classes, urls, score])
+        ),[watchlist, like, classes, urls, score, loadingWatch, loadingLike])
     )
 }
