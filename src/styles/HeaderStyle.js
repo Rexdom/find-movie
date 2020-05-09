@@ -2,6 +2,8 @@ const HeaderStyle = function(theme, fade){
   return {
     appBar: {
         transition: "all 500ms ease",
+        left:'0px',
+        boxSizing:'content-box',
     },
     transparent: {
         backgroundColor: "transparent !important",
