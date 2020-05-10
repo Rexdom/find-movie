@@ -5,6 +5,7 @@ const StarRatingStyle = function(theme){
             alignItems: 'center',
         },
         description: {
+            marginLeft:'1px',
             fontSize: '0.8rem'
         }
     }
