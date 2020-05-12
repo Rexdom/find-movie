@@ -154,6 +154,7 @@ export default function MainPage(props) {
       }else if (path!==prevPath){
         setPrevPath(path);
         setShownMovies([]);
+        setStatus("Not loading");
       }else if (prevPath!==null){
         showSnackbar("Log in to enjoy more features!", "info");
         setRecord(null)

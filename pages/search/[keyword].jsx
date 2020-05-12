@@ -7,8 +7,6 @@ const SearchPage = ({query, api_url, reject}) => {
   const [movies, setMovies]=useState([]);
   const [page, setPage]=useState(1);
 
-  console.log(page);
-
   useEffect(()=>{
     setPage(1)
     setMovies([]);
