@@ -1,10 +1,10 @@
-import blue from '@material-ui/core/colors/blue';
+import blue from "@material-ui/core/colors/blue";
 
 const theme = {
-    palette: {
-        primary: blue,
-        type: 'dark',
-    },
+  palette: {
+    primary: blue,
+    type: "dark",
+  },
 };
 
 export default theme;
